@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Энгийн тооны машин</title>
+    <style>
+        table button {
+            width: 100%;
+            min-width: 70px;
+            height: 70px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        #display {
+            width: 100%;
+            box-sizing: border-box;
+            height: 60px;
+            font-size: 32px;
+        }
+    </style>
+</head>
+<body>
+    <center>
+        <img src="images.webp" alt="Albert Einstein" style="max-width: 220px; border-radius: 12px;">
+        <p style="font-size: 20px; font-weight: bold;">Таны бодлогыг Albert Einstein бодох болно 🧠</p>
+        <!-- Тооны машины үндсэн хүснэгтэн бүтэц -->
+        <table border="0" cellpadding="8" cellspacing="4">
+            <!-- Дэлгэцийн мөр -->
+            <tr>
+                <td colspan="4">
+                    <input type="text" id="display" value="0" readonly size="22" style="text-align: right">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><button type="button" onclick="clearDisplay()">Цэвэрлэх</button></td>
+                <td><button type="button" onclick="backspace()">⌫</button></td>
+                <td><button type="button" onclick="appendOperator('/')">÷</button></td>
+            </tr>
+            <tr>
+                <td><button type="button" onclick="appendNumber('7')">7</button></td>
+                <td><button type="button" onclick="appendNumber('8')">8</button></td>
+                <td><button type="button" onclick="appendNumber('9')">9</button></td>
+                <td><button type="button" onclick="appendOperator('*')">×</button></td>
+            </tr>
+            <tr>
+                <td><button type="button" onclick="appendNumber('4')">4</button></td>
+                <td><button type="button" onclick="appendNumber('5')">5</button></td>
+                <td><button type="button" onclick="appendNumber('6')">6</button></td>
+                <td><button type="button" onclick="appendOperator('-')">−</button></td>
+            </tr>
+            <tr>
+                <td><button type="button" onclick="appendNumber('1')">1</button></td>
+                <td><button type="button" onclick="appendNumber('2')">2</button></td>
+                <td><button type="button" onclick="appendNumber('3')">3</button></td>
+                <td><button type="button" onclick="appendOperator('+')">+</button></td>
+            </tr>
+            <tr>
+                <td colspan="2"><button type="button" onclick="appendNumber('0')">0</button></td>
+                <td><button type="button" onclick="appendDecimal()">.</button></td>
+                <td><button type="button" onclick="calculate()">=</button></td>
+            </tr>
+        </table>
+        <div id="payNotice" style="display:none">
+            <p>Бодож байна.</p>
+            <button type="button" onclick="showPaidResult()">Бодсон болов уу</button>
+            <a href="https://pay.wire.mn/link/plink_5esp2xdouonp2fraobtauy3ab4">Асуух</a>
+        </div>
+    </center>
+
+    <script>
+        // Төлөвийн хувьсагчид
+        let currentInput = '0';
+        let previousInput = '';
+        let operator = null;
+        let shouldResetScreen = false;
+
+        const PAYMENT_URL = 'https://pay.wire.mn/link/plink_5esp2xdouonp2fraobtauy3ab4';
+        const PENDING_KEY = 'calc_pending_result';
+
+        const display = document.getElementById('display');
+
+        // Дэлгэц шинэчлэх функц
+        function updateDisplay() {
+            if (operator !== null && previousInput !== '') {
+                const opSymbol = operator === '*' ? '×' : operator === '/' ? '÷' : operator;
+                display.value = previousInput + ' ' + opSymbol + (shouldResetScreen ? '' : ' ' + currentInput);
+            } else {
+                display.value = currentInput;
+            }
+        }
+
+        // Тоо оруулах
+        function appendNumber(number) {
+            if (currentInput === '0' || shouldResetScreen) {
+                currentInput = number;
+                shouldResetScreen = false;
+            } else {
+                currentInput += number;
+            }
+            updateDisplay();
+        }
+
+        // Аравтын бутархайн цэг оруулах
+        function appendDecimal() {
+            if (shouldResetScreen) {
+                currentInput = '0.';
+                shouldResetScreen = false;
+                updateDisplay();
+                return;
+            }
+            if (!currentInput.includes('.')) {
+                currentInput += '.';
+                updateDisplay();
+            }
+        }
+
+        // Үйлдлийн тэмдэг (+, -, *, /) сонгох
+        function appendOperator(selectedOperator) {
+            // Хариу харахын тулд "=" дарж төлбөр хийх шаардлагатай
+            if (operator !== null && !shouldResetScreen) {
+                return;
+            }
+            previousInput = currentInput;
+            operator = selectedOperator;
+            shouldResetScreen = true;
+            updateDisplay();
+        }
+
+        // Бүгдийг цэвэрлэх (C)
+        function clearDisplay() {
+            currentInput = '0';
+            previousInput = '';
+            operator = null;
+            shouldResetScreen = false;
+            updateDisplay();
+        }
+
+        // Сүүлийн нэг тэмдэгтийг устгах (Backspace)
+        function backspace() {
+            if (shouldResetScreen) return;
+            if (currentInput.length > 1) {
+                currentInput = currentInput.slice(0, -1);
+            } else {
+                currentInput = '0';
+            }
+            updateDisplay();
+        }
+
+        // Тооцоолол хийх (=)
+        function calculate() {
+            if (operator === null || shouldResetScreen) return;
+
+            const prev = parseFloat(previousInput);
+            const current = parseFloat(currentInput);
+
+            if (isNaN(prev) || isNaN(current)) return;
+
+            let result = 0;
+
+            switch (operator) {
+                case '+':
+                    result = prev + current;
+                    break;
+                case '-':
+                    result = prev - current;
+                    break;
+                case '*':
+                    result = prev * current;
+                    break;
+                case '/':
+                    if (current === 0) {
+                        display.value = 'Алдаа: Тэгд хуваахгүй';
+                        currentInput = '0';
+                        previousInput = '';
+                        operator = null;
+                        shouldResetScreen = true;
+                        return;
+                    }
+                    result = prev / current;
+                    break;
+                default:
+                    return;
+            }
+
+            // Хөвөгч цэгийн нарийвчлалын жижиг зөрүүг засах
+            result = Math.round(result * 10000000000) / 10000000000;
+
+            // Хариуг шууд харуулахгүй: хадгалаад төлбөрийн хуудас руу шилжүүлнэ
+            const opSymbol = operator === '*' ? '×' : operator === '/' ? '÷' : operator;
+            try {
+                localStorage.setItem(PENDING_KEY, JSON.stringify({
+                    expr: previousInput + ' ' + opSymbol + ' ' + currentInput,
+                    result: String(result)
+                }));
+            } catch (e) {}
+
+            currentInput = '0';
+            operator = null;
+            previousInput = '';
+            shouldResetScreen = true;
+            display.value = 'Бодож байна...';
+            window.location.href = PAYMENT_URL;
+        }
+
+        // Төлбөр хийсний дараа хариуг харуулах
+        function showPaidResult() {
+            let pending = null;
+            try {
+                pending = JSON.parse(localStorage.getItem(PENDING_KEY));
+            } catch (e) {}
+            if (!pending) return false;
+            try { localStorage.removeItem(PENDING_KEY); } catch (e) {}
+            currentInput = pending.result;
+            shouldResetScreen = true;
+            display.value = pending.expr + ' = ' + pending.result;
+            document.getElementById('payNotice').style.display = 'none';
+            return true;
+        }
+
+        // Хуудас ачаалахад: төлбөрийн хуудаснаас буцаж ирсэн эсэхийг шалгах
+        (function init() {
+            let pending = null;
+            try {
+                pending = JSON.parse(localStorage.getItem(PENDING_KEY));
+            } catch (e) {}
+            if (!pending) return;
+
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('paid') === '1') {
+                showPaidResult();
+                history.replaceState(null, '', window.location.pathname);
+            } else if (params.get('paid') === '0') {
+                try { localStorage.removeItem(PENDING_KEY); } catch (e) {}
+                display.value = 'Төлбөр амжилтгүй боллоо';
+                history.replaceState(null, '', window.location.pathname);
+            } else {
+                document.getElementById('payNotice').style.display = 'block';
+            }
+        })();
+    </script>
+</body>
+</html>
