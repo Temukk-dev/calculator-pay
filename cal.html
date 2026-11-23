@@ -22,6 +22,10 @@
 </head>
 <body>
     <center>
+<<<<<<< HEAD
+=======
+        <!-- Хөгжилтэй хэсэг: Эйнштейн -->
+>>>>>>> cc15a9e35730d59702c900d9f5f280f4d3632f22
         <img src="images.webp" alt="Albert Einstein" style="max-width: 220px; border-radius: 12px;">
         <p style="font-size: 20px; font-weight: bold;">Таны бодлогыг Albert Einstein бодох болно 🧠</p>
         <!-- Тооны машины үндсэн хүснэгтэн бүтэц -->
@@ -33,7 +37,11 @@
                 </td>
             </tr>
             <tr>
+<<<<<<< HEAD
                 <td colspan="2"><button type="button" onclick="clearDisplay()">Цэвэрлэх</button></td>
+=======
+                <td colspan="2"><button type="button" onclick="clearDisplay()">C (Цэвэрлэх)</button></td>
+>>>>>>> cc15a9e35730d59702c900d9f5f280f4d3632f22
                 <td><button type="button" onclick="backspace()">⌫</button></td>
                 <td><button type="button" onclick="appendOperator('/')">÷</button></td>
             </tr>
@@ -62,9 +70,15 @@
             </tr>
         </table>
         <div id="payNotice" style="display:none">
+<<<<<<< HEAD
             <p>Бодож байна.</p>
             <button type="button" onclick="showPaidResult()">Бодсон болов уу</button>
             <a href="https://pay.wire.mn/link/plink_5esp2xdouonp2fraobtauy3ab4">Асуух</a>
+=======
+            <p>Төлбөр хүлээгдэж байна.</p>
+            <button type="button" onclick="showPaidResult()">Төлбөр төлсөн — хариуг харах</button>
+            <a href="https://pay.wire.mn/link/plink_5esp2xdouonp2fraobtauy3ab4">Төлбөр хийх</a>
+>>>>>>> cc15a9e35730d59702c900d9f5f280f4d3632f22
         </div>
     </center>
 
@@ -199,7 +213,11 @@
             operator = null;
             previousInput = '';
             shouldResetScreen = true;
+<<<<<<< HEAD
             display.value = 'Бодож байна...';
+=======
+            display.value = 'Төлбөр хүлээж байна...';
+>>>>>>> cc15a9e35730d59702c900d9f5f280f4d3632f22
             window.location.href = PAYMENT_URL;
         }
 
